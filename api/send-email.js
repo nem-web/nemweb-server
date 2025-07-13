@@ -1,19 +1,18 @@
+import express from "express";
 import nodemailer from "nodemailer";
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).end("Method Not Allowed");
-  }
+const router = express.Router();
 
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.VITE_SMTP_USER,
+    pass: process.env.VITE_SMTP_PASS,
+  },
+});
+
+router.post("/", async (req, res) => {
   const { userEmail, productUrl } = req.body;
-
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.VITE_SMTP_USER,
-      pass: process.env.VITE_SMTP_PASS,
-    },
-  });
 
   try {
     await transporter.sendMail({
@@ -27,9 +26,11 @@ export default async function handler(req, res) {
       `,
     });
 
-    res.status(200).json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: "Failed to send email" });
+    res.status(200).json({ success: true, message: "Email sent successfully" });
+  } catch (error) {
+    console.error("Email error:", error);
+    res.status(500).json({ success: false, message: "Email failed" });
   }
-}
+});
+
+export default router;
