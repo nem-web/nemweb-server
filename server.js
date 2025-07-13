@@ -1,23 +1,26 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import sendEmailRoute from "./api/send-email.js"; // 👈 correctly import
+
+import sendAffiliateRequest from "./api/sendAffiliateRequest.js";
+import sendProductNotification from "./api/sendProductNotification.js";
+import sendContactForm from "./api/sendContactForm.js";
 
 dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
-// Mount routes
-app.use("/send-email", sendEmailRoute); // 👈 base path
+app.use("/send-email", sendAffiliateRequest);
+app.use("/send-product-notification", sendProductNotification);
+app.use("/send-contact", sendContactForm);
 
 app.get("/", (req, res) => {
-  res.send("🚀 NemWeb server is running!");
+  res.send("✅ NemWeb Email Server is running.");
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`✅ Server running at http://localhost:${PORT}`);
 });
